@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrBookNotFound = errors.New("book not found")
+	ErrMusicNotFound = errors.New("music not found")
 )
 
 type Music struct {
@@ -17,7 +17,7 @@ type Music struct {
 	Genre       string    `json:"genre"`
 }
 
-type UpdateBookInput struct {
+type UpdateMusicInput struct {
 	Name        *string    `json:"name"`
 	Performer   *string    `json:"performer"`
 	RealiseDate *time.Time `json:"realise_date"`

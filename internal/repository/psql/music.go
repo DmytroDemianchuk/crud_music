@@ -9,7 +9,7 @@ import (
 	"github.com/dmytrodemianchuk/crud_music/internal/domain"
 )
 
-type Music struct {
+type Musics struct {
 	db *sql.DB
 }
 
@@ -17,83 +17,83 @@ func NewMusics(db *sql.DB) *Musics {
 	return &Musics{db}
 }
 
-func (b *Books) Create(ctx context.Context, book domain.Book) error {
-	_, err := b.db.Exec("INSERT INTO books (title, author, publish_date, rating) values ($1, $2, $3, $4)",
+func (m *Musics) Create(ctx context.Context, book domain.Book) error {
+	_, err := m.db.Exec("INSERT INTO books (title, author, publish_date, rating) values ($1, $2, $3, $4)",
 		book.Title, book.Author, book.PublishDate, book.Rating)
 
 	return err
 }
 
-func (b *Books) GetByID(ctx context.Context, id int64) (domain.Book, error) {
-	var book domain.Book
-	err := b.db.QueryRow("SELECT id, title, author, publish_date, rating FROM books WHERE id=$1", id).
-		Scan(&book.ID, &book.Title, &book.Author, &book.PublishDate, &book.Rating)
+func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Book, error) {
+	var music domain.Music
+	err := m.db.QueryRow("SELECT id, title, author, publish_date, rating FROM books WHERE id=$1", id).
+		Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseDate, &music.Genre)
 	if err == sql.ErrNoRows {
-		return book, domain.ErrBookNotFound
+		return music, domain.ErrMusicNotFound
 	}
 
-	return book, err
+	return music, err
 }
 
-func (b *Books) GetAll(ctx context.Context) ([]domain.Book, error) {
-	rows, err := b.db.Query("SELECT id, title, author, publish_date, rating FROM books")
+func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
+	rows, err := m.db.Query("SELECT id, title, author, publish_date, rating FROM books")
 	if err != nil {
 		return nil, err
 	}
 
-	books := make([]domain.Book, 0)
+	musics := make([]domain.Music, 0)
 	for rows.Next() {
-		var book domain.Book
-		if err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.PublishDate, &book.Rating); err != nil {
+		var music domain.Music
+		if err := rows.Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseDate, &music.Genre); err != nil {
 			return nil, err
 		}
 
-		books = append(books, book)
+		musics = append(musics, music)
 	}
 
-	return books, rows.Err()
+	return musics, rows.Err()
 }
 
-func (b *Books) Delete(ctx context.Context, id int64) error {
-	_, err := b.db.Exec("DELETE FROM books WHERE id=$1", id)
+func (m *Musics) Delete(ctx context.Context, id int64) error {
+	_, err := m.db.Exec("DELETE FROM musics WHERE id=$1", id)
 
 	return err
 }
 
-func (b *Books) Update(ctx context.Context, id int64, inp domain.UpdateBookInput) error {
+func (m *Musics) Update(ctx context.Context, id int64, inp domain.UpdateMusicInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
 
-	if inp.Title != nil {
-		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
-		args = append(args, *inp.Title)
+	if inp.Name != nil {
+		setValues = append(setValues, fmt.Sprintf("name=$%d", argId))
+		args = append(args, *inp.Name)
 		argId++
 	}
 
-	if inp.Author != nil {
-		setValues = append(setValues, fmt.Sprintf("author=$%d", argId))
-		args = append(args, *inp.Author)
+	if inp.Performer != nil {
+		setValues = append(setValues, fmt.Sprintf("performer=$%d", argId))
+		args = append(args, *inp.Performer)
 		argId++
 	}
 
-	if inp.PublishDate != nil {
-		setValues = append(setValues, fmt.Sprintf("publish_date=$%d", argId))
-		args = append(args, *inp.PublishDate)
+	if inp.RealiseDate != nil {
+		setValues = append(setValues, fmt.Sprintf("realise_date=$%d", argId))
+		args = append(args, *inp.RealiseDate)
 		argId++
 	}
 
-	if inp.Rating != nil {
-		setValues = append(setValues, fmt.Sprintf("rating=$%d", argId))
-		args = append(args, *inp.Rating)
+	if inp.Genre != nil {
+		setValues = append(setValues, fmt.Sprintf("genre=$%d", argId))
+		args = append(args, *inp.Genre)
 		argId++
 	}
 
 	setQuery := strings.Join(setValues, ", ")
 
-	query := fmt.Sprintf("UPDATE books SET %s WHERE id=$%d", setQuery, argId)
+	query := fmt.Sprintf("UPDATE musics SET %s WHERE id=$%d", setQuery, argId)
 	args = append(args, id)
 
-	_, err := b.db.Exec(query, args...)
+	_, err := m.db.Exec(query, args...)
 	return err
 }
