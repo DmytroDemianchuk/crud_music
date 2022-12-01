@@ -17,16 +17,16 @@ func NewMusics(db *sql.DB) *Musics {
 	return &Musics{db}
 }
 
-func (m *Musics) Create(ctx context.Context, book domain.Book) error {
+func (m *Musics) Create(ctx context.Context, music domain.Music) error {
 	_, err := m.db.Exec("INSERT INTO books (title, author, publish_date, rating) values ($1, $2, $3, $4)",
-		book.Title, book.Author, book.PublishDate, book.Rating)
+		music.Name, music.Performer, music.RealiseDate, music.Genre)
 
 	return err
 }
 
-func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Book, error) {
+func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
 	var music domain.Music
-	err := m.db.QueryRow("SELECT id, title, author, publish_date, rating FROM books WHERE id=$1", id).
+	err := m.db.QueryRow("SELECT id, name, performer, realise_data, rating FROM musics WHERE id=$1", id).
 		Scan(&music.ID, &music.Name, &music.Performer, &music.RealiseDate, &music.Genre)
 	if err == sql.ErrNoRows {
 		return music, domain.ErrMusicNotFound
@@ -36,7 +36,7 @@ func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Book, error) {
 }
 
 func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
-	rows, err := m.db.Query("SELECT id, title, author, publish_date, rating FROM books")
+	rows, err := m.db.Query("SELECT id, name, performer, realise_date, genre FROM musics")
 	if err != nil {
 		return nil, err
 	}

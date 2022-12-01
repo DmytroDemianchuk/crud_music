@@ -34,7 +34,7 @@ func (m *Musics) Create(ctx context.Context, music domain.Music) error {
 }
 
 func (m *Musics) GetByID(ctx context.Context, id int64) (domain.Music, error) {
-	return b.repo.GetByID(ctx, id)
+	return m.repo.GetByID(ctx, id)
 }
 
 func (m *Musics) GetAll(ctx context.Context) ([]domain.Music, error) {
