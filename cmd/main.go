@@ -35,7 +35,7 @@ func main() {
 
 	// init & run server
 	srv := &http.Server{
-		Addr:    ":8000",
+		Addr:    ":8080",
 		Handler: handler.InitRouter(),
 	}
 
